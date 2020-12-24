@@ -75,7 +75,12 @@ namespace NewBackups
 
         public bool RecoveryBackupToRestPoint(string name)
         {
-            return true;
+			DateTime dt = Convert.ToDateTime(name);
+
+			if (!rest_points.ContainsKey(dt))
+				return false;
+
+			return rest_points[dt].Recovery();
         }
     }
 }

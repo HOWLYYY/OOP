@@ -27,11 +27,10 @@ namespace NewBackups
 
         public bool AddFullRP()
         {
-            ZipArchive zipArchive = null;
-            if (typeStorage == TypeStorage.Arch)
-            {
-                zipArchive = ZipFile.Open(string.Format("{0}\\backup.zip", name), ZipArchiveMode.Update);
-            }
+			ZipArchive zipArchive = (typeStorage == TypeStorage.Arch) ?
+									ZipFile.Open(string.Format("{0}\\backup.zip", name),
+												ZipArchiveMode.Read) :
+									null;
 
             try
             {
@@ -61,10 +60,10 @@ namespace NewBackups
             {
                 return AddFullRP();
             }
-            ZipArchive zipArchive = null;
-            if (typeStorage == TypeStorage.Arch)
-                zipArchive = ZipFile.Open(string.Format("{0}\\backup.zip", name), ZipArchiveMode.Update);
-
+			ZipArchive zipArchive = (typeStorage == TypeStorage.Arch) ?
+						ZipFile.Open(string.Format("{0}\\backup.zip", name),
+									ZipArchiveMode.Update) :
+						null;
             try
             {
                 foreach (var file in resources)
@@ -81,7 +80,6 @@ namespace NewBackups
                                 File.Copy(file.Key, string.Format("{0}\\{1}", name, Myfile));
                         }
                     }
-                    //искать файл в предыдущей точке, если да, то смотрим его дату обновления, если дата больше чем дата предыдущей точки восстановления, то сохраняем файл(FileInfo)
                 }
             }
             catch(Exception e)
@@ -91,5 +89,24 @@ namespace NewBackups
 
             return true;
         }
+
+		public bool Recovery()
+		{
+			ZipArchive zipArchive = (typeStorage == TypeStorage.Arch) ?
+									ZipFile.Open(string.Format("{0}\\backup.zip", name),
+												ZipArchiveMode.Read) :
+									null;
+			foreach (var file in resources)
+			{
+				var Myfile = Path.GetFileName(file.Key);
+				if (File.Exists(file.Key))
+					File.Delete(file.Key);
+				if (typeStorage == TypeStorage.Arch)
+					 zipArchive.GetEntry(Myfile).ExtractToFile(file.Key);
+				else
+					File.Copy(string.Format("{0}\\{1}", name, Myfile), file.Key);
+			}
+            return true;
+		}
     }
 }
