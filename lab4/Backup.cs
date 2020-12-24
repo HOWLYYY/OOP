@@ -79,7 +79,7 @@ namespace NewBackups
 
 			if (!rest_points.ContainsKey(dt))
 				return false;
-
+            
 			return rest_points[dt].Recovery();
         }
     }

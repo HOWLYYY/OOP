@@ -17,19 +17,23 @@ namespace NewBackups
         public RecoveryPoint(Dictionary<string, TypeObject> resources, string preffix, TypeStorage ts, TypeRestPoint trp)
         {
             this.resources = new Dictionary<string, TypeObject>(resources);
-            date = DateTime.Now;
+            date = TrimDate(DateTime.Now, TimeSpan.TicksPerSecond);
             name = String.Format("{0}{1}", preffix, date.ToString("dd_MM_yyyy_HH_mm_ss"));
             typeStorage = ts;
             typeRestPoint = trp;
             if (!Directory.Exists(name))
                 Directory.CreateDirectory(name);
         }
+        private DateTime TrimDate(DateTime date, long ticks)
+        {
+            return new DateTime(date.Ticks - (date.Ticks % ticks), date.Kind);
+        }
 
         public bool AddFullRP()
         {
 			ZipArchive zipArchive = (typeStorage == TypeStorage.Arch) ?
 									ZipFile.Open(string.Format("{0}\\backup.zip", name),
-												ZipArchiveMode.Read) :
+												ZipArchiveMode.Update) :
 									null;
 
             try
@@ -86,7 +90,10 @@ namespace NewBackups
             {
                 return false;
             }
-
+            if (zipArchive != null)
+            {
+                zipArchive.Dispose();
+            }
             return true;
         }
 
