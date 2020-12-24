@@ -78,7 +78,7 @@ namespace NewBackups
                             if (typeStorage == TypeStorage.Arch)
                                 zipArchive.CreateEntryFromFile(file.Key, Myfile);
                             if (typeStorage == TypeStorage.Sep)
-                                File.Copy(file.Key, Myfile);
+                                File.Copy(file.Key, string.Format("{0}\\{1}", name, Myfile));
                         }
                     }
                     //искать файл в предыдущей точке, если да, то смотрим его дату обновления, если дата больше чем дата предыдущей точки восстановления, то сохраняем файл(FileInfo)
