@@ -13,9 +13,22 @@ namespace NewBackups
         public DateTime date { get; private set; }
         public TypeStorage typeStorage { get; private set; }
         public TypeRestPoint typeRestPoint { get; private set; }
+		public long long Size
+		{
+			get
+			{
+				long long res = 0;
+				DirectoryInfo di = new DirectoryInfo(name);
+				FileInfo[] fiArr = di.GetFiles();
+				foreach (FileInfo f in fiArr)
+					res += f.Length;
+				return res;
+			}
+		}
 
         public RecoveryPoint(Dictionary<string, TypeObject> resources, string preffix, TypeStorage ts, TypeRestPoint trp)
         {
+			Size = 0;
             this.resources = new Dictionary<string, TypeObject>(resources);
             date = TrimDate(DateTime.Now, TimeSpan.TicksPerSecond);
             name = String.Format("{0}{1}", preffix, date.ToString("dd_MM_yyyy_HH_mm_ss"));
@@ -114,6 +127,11 @@ namespace NewBackups
 					File.Copy(string.Format("{0}\\{1}", name, Myfile), file.Key);
 			}
             return true;
+		}
+
+		public void Clean()
+		{
+			Directory.Delete(name);
 		}
     }
 }
