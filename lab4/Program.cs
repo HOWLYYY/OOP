@@ -86,13 +86,14 @@ namespace NewBackups
 						backup1.max_amount = -1;
 					break;
 				case "hybrid":
-					// Console.Write("Enter max size of backup: ");
-					// Console.ReadLine();
+					Console.Write("Enter max size of backup: ");
+					Console.ReadLine();
 					break;
 				default:
 					Console.WriteLine("Error type");
 					break;
 			}
+			backup1.Clean();
 		}
 	}
 }

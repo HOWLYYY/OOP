@@ -14,7 +14,7 @@ namespace NewBackups
 		public int max_amount;
 		public DateTime max_date;
 
-		public long long Size
+		public long Size
 		{
 			get
 			{
@@ -29,7 +29,7 @@ namespace NewBackups
             rest_points = new Dictionary<DateTime, RecoveryPoint>();
 			max_size = -1;
 			max_amount = -1;
-			max_date = null;
+			max_date = default;
         }
 
         public bool AddResource(string resource)
@@ -97,39 +97,39 @@ namespace NewBackups
 			return rest_points[dt].Recovery();
         }
 
-		private void Clean()
+		public void Clean()
 		{
-			long long delta_size = Size - max_size;
-			long long delta_amount = rest_points.Count - max_amount;
+			long delta_size = Size - max_size;
+			long delta_amount = rest_points.Count - max_amount;
 			if (max_amount > 0 && delta_amount > 0)
 				CleanAmount(delta_amount);
 			else if (max_size > 0 && delta_size > 0)
 				CleanSize(delta_size);
-			else if (max_date != null)
+			else if (max_date != default(DateTime))
 				CleanDate();
 		}
 
-		private void CleanAmount(long long delta_amount)
+		private void CleanAmount(long delta_amount)
 		{
-			long long i = 0;
+			long i = 0;
 			foreach (var point in rest_points)
 			{
 				if (i++ >= max_amount)
 					return ;
-				point.Clean();
+				point.Value.Clean();
 				rest_points.Remove(point.Key);
 			}
 		}
 
-		private void CleanSize(long long delta_size)
+		private void CleanSize(long delta_size)
 		{
 			foreach (var point in rest_points)
 			{
 				if (delta_size <= 0)
 					return ;
-				point.Clean();
+				point.Value.Clean();
 				rest_points.Remove(point.Key);
-				delta_size -= point.Size;
+				delta_size -= point.Value.Size;
 			}
 		}
 
@@ -139,7 +139,7 @@ namespace NewBackups
 			{
 				if (point.Key < max_date)
 				{
-					point.Clean();
+					point.Value.Clean();
 					rest_points.Remove(point.Key);
 				}
 			}
